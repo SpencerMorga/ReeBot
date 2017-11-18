@@ -10,9 +10,9 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if message.mention_everyone:
             await client.send_file(message.channel, random.choice(os.listdir("""./pics""")))
-        if message.content.startswith('@NerdWords#9998'):
+        if message.mentions[0].id == '170383347497959425':
             await client.send_message(message.channel, 'papa 🖐👁👄👁🖐')
-        if message.content.startswith('@wSpitfire#0344'):
+        if message.mentions[0].id == '178682430566170624':
             await client.send_message(message.channel, 'mama 🖐👁👄👁🖐')
 
 token = sys.argv[1]
