@@ -9,7 +9,7 @@ class MyClient(discord.Client):
 
     async def on_message(self, message):
         if message.mention_everyone:
-            await client.send_file(message.channel, random.choice(os.listdir("""./pics""")))
+            await client.send_file(message.channel, str(random.choice(os.listdir("""./pics"""))))
         if message.mentions[0].id == '170383347497959425':
             await client.send_message(message.channel, 'papa 🖐👁👄👁🖐')
         if message.mentions[0].id == '178682430566170624':
