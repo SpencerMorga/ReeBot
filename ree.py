@@ -12,9 +12,11 @@ class MyClient(discord.Client):
             images = os.listdir("""./pics""")
             imagePath = './pics/' + str(random.choice(images))
             await client.send_file(message.channel, imagePath)
-        if message.mentions[0].id == '170383347497959425':
+        if 'https://www.twitch.tv/' in message.content: #shameless promo
+            await client.send_message(message.channel, 'shameless self promo')
+        if message.mentions[0].id == '170383347497959425': #nerdwords
             await client.send_message(message.channel, 'papa 🖐👁👄👁🖐')
-        if message.mentions[0].id == '178682430566170624':
+        if message.mentions[0].id == '178682430566170624': #wspitfire
             await client.send_message(message.channel, 'mama 🖐👁👄👁🖐')
 
 token = sys.argv[1]
