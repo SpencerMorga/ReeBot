@@ -30,12 +30,12 @@ class MyClient(discord.Client):
         if '~df' in message.content:
             tokens = message.content.split(" ")
             if (len(tokens) == 2):
-                df = message.server.get_member('183709274579533825')
-                if (df):
+                dannyRole = message.server.get_member('183709274579533825').top_role
+                if (dannyRole):
                     count = int(tokens[-1])
                     value = min(count, 100) #dont know how much we can spam chat before discord says no
-                    for i in range(0, value):
-                        await client.send_message(message.channel, df.mention)
+                    for _ in range(0, value):
+                        await client.send_message(message.channel, dannyRole.mention)
                 else:
                     await client.send_message(message.channel, 'He cannot be found...')
 
