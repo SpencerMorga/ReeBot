@@ -30,7 +30,7 @@ class MyClient(discord.Client):
         if '~df' in message.content:
             tokens = message.content.split(" ")
             if (len(tokens) == 2):
-                dannyRole = message.server.get_member('178682430566170624').top_role #183709274579533825
+                dannyRole = message.server.get_member('183709274579533825').top_role
                 if (dannyRole):
                     count = int(tokens[-1])
                     value = min(count, 100) #dont know how much we can spam chat before discord says no
