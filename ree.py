@@ -34,12 +34,8 @@ class MyClient(discord.Client):
                 if (dannyRole):
                     count = int(tokens[-1])
                     value = min(count, 100) #dont know how much we can spam chat before discord says no
-
-                    fullMessage = ""
                     for _ in range(0, value):
-                        fullMessage += (dannyRole.mention + "\n")
-
-                    await client.send_message(message.channel, fullMessage)
+                        await client.send_message(message.channel, dannyRole.mention)
                 else:
                     await client.send_message(message.channel, 'He cannot be found...')
 
