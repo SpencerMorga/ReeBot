@@ -37,7 +37,7 @@ class MyClient(discord.Client):
 
                     fullMessage = ""
                     for _ in range(0, value):
-                        fullMessage += (dannyRole.toString() + "\n")
+                        fullMessage += (dannyRole.mention + "\n")
 
                     await client.send_message(message.channel, fullMessage)
                 else:
