@@ -13,7 +13,7 @@ class MyClient(discord.Client):
             imagePath = './pics/' + str(random.choice(images))
             await client.send_file(message.channel, imagePath)
 
-        if 'https://www.twitch.tv/' in message.content: #shameless promo
+        if 'twitch.tv/' in message.content: #shameless promo
             await client.send_message(message.channel, 'shameless self promo')
 
         if len(message.mentions) > 0:
@@ -27,17 +27,19 @@ class MyClient(discord.Client):
         if 'why are you sad' in message.content:
             await client.send_message(message.channel, 'because my parents never loved me')
 
-        if '~df' in message.content:
+        if '~spam' in message.content:
             tokens = message.content.split(" ")
-            if (len(tokens) == 2):
-                dannyRole = message.server.get_member('183709274579533825').top_role
-                if (dannyRole):
-                    count = int(tokens[-1])
-                    value = min(count, 100) #dont know how much we can spam chat before discord says no
+            if (len(tokens) == 3 and len(message.mentions) > 0):
+                user = await client.get_user_info(tokens[1][2:-1])
+                if(user):
+                    count = int(tokens[2])
+                    value = min(count, 25)
                     for _ in range(0, value):
-                        await client.send_message(message.channel, dannyRole.mention)
+                        await client.send_message(message.channel, user.mention)
                 else:
-                    await client.send_message(message.channel, 'He cannot be found...')
+                    await client.send_message(message.channel, 'error: user not found')
+            else:
+                await client.send_message(message.channel, 'usage: ~spam @User tagCount')
 
 token = sys.argv[1]
 client = MyClient()
