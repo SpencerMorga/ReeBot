@@ -2,6 +2,11 @@ import sys
 import random
 import os
 import discord
+import re
+import asyncio
+
+def is_me(m):
+        return m.author == client.user
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -27,19 +32,31 @@ class MyClient(discord.Client):
         if 'why are you sad' in message.content:
             await client.send_message(message.channel, 'because my parents never loved me')
 
-        if '~spam' in message.content:
+        
+        #ree commands
+        if message.content[0] == '~':
             tokens = message.content.split(" ")
-            if (len(tokens) == 3 and len(message.mentions) > 0):
-                user = await client.get_user_info(tokens[1][2:-1])
-                if(user):
-                    count = int(tokens[2])
-                    value = min(count, 25)
-                    for _ in range(0, value):
-                        await client.send_message(message.channel, user.mention)
+
+            #spam command
+            if(tokens[0] == "~spam"):
+                if (len(tokens) == 3 and re.match("^<@(\d+)>$",tokens[1]) and tokens[2].isdigit()):
+                    user = await client.get_user_info(tokens[1][2:-1])
+                    if(user):
+                        count = abs(int(tokens[2]))
+                        value = min(count, 25)
+                        for _ in range(0, value):
+                            await client.send_message(message.channel, user.mention)
+                    else:
+                        await client.send_message(message.channel, 'error: user not found')
                 else:
-                    await client.send_message(message.channel, 'error: user not found')
-            else:
-                await client.send_message(message.channel, 'usage: ~spam @User tagCount')
+                    await client.send_message(message.channel, 'usage: ~spam @User tagCount')
+            
+            #clear command
+            if(tokens[0] == "~clear" and len(tokens) == 1):
+                async for x in client.logs_from(message.channel, limit=1000):
+                    if is_me(x):
+                        await client.delete_message(x)
+                        await asyncio.sleep(1.2)
 
 token = sys.argv[1]
 client = MyClient()
