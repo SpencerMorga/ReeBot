@@ -4,6 +4,7 @@ import os
 import discord
 import re
 import asyncio
+import config
 
 def is_me(m):
         return m.author == client.user
@@ -22,10 +23,10 @@ class MyClient(discord.Client):
             await client.send_message(message.channel, 'shameless self promo')
 
         if len(message.mentions) > 0:
-            if message.mentions[0].id == '170383347497959425': #nerdwords
+            if message.mentions[0].id == config.user_nerdwords:
                 if random.randint(0, 100) < 7: #im too lazy to make it a float for 6.9%
                     await client.send_message(message.channel, 'papa 🖐👁👄👁🖐')
-            if message.mentions[0].id == '178682430566170624': #wspitfire
+            if message.mentions[0].id == config.user_spitfire:
                 if random.randint(0, 100) < 7:
                     await client.send_message(message.channel, 'mama 🖐👁👄👁🖐')
 
