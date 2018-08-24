@@ -62,7 +62,7 @@ class MyClient(discord.Client):
 
     # TODO: might have to add the sync keyword but it does not yet work with the sceduler so commenting out for now
     def collectPancakes(self):
-        client.send_message(config.channel_bot_commands, 'p!daily')
+        client.send_message(config.channel_bot_commands, config.daily_pancakes)
 
 token = sys.argv[1]
 client = MyClient()

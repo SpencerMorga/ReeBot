@@ -14,3 +14,4 @@ debug_user = '' # Will get overwritten with whoever turned on debugging
 
 # Misc
 seconds_in_day = 86400
+daily_pancakes = 'p!daily'
