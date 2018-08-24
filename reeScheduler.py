@@ -27,14 +27,14 @@ class ReeScheduler:
             self.timer.cancel()
             self.running = False
 
-    def __init__(self):
+    def __init__(self, globals):
         self.schedules = dict()
         self.CONST_SCHEDULE_DIR = 'schedules'
         self.CONST_DATE_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+        self.globals = globals
     
     def stop_running_schedules(self):
         for key, value in self.schedules.items():
-            print('Starting %s' % key)
             value.stop()
 
     def parse_schedule_file(self, fileName):
@@ -42,50 +42,51 @@ class ReeScheduler:
             return None
         with open(fileName, "r") as f:
             data = f.readlines()
-            name = data[0]
-            dateString = data[1]
+            name = data[0][0:-1] # -1 to cut off newline char
+            dateString = data[1][0:-1]
             intervalTime = int(data[2])
-            storedTime = datetime.strptime(dateString[0:-1], self.CONST_DATE_FORMAT)
-        print('Parsed schedule file %s %d %s' % (name, intervalTime, dateString))
-        return (name, intervalTime, storedTime)
+            
+            functionStr = data[3]
+            function = eval(functionStr, self.globals) # This function is magical
+            if not function:
+                raise NotImplementedError("Mthod %s not defined" % functionStr)
 
-    def load_saved_schedules(self):
+            storedTime = datetime.strptime(dateString, self.CONST_DATE_FORMAT)
+        #print('Parsed schedule file %s %d %s %s' % (name, intervalTime, dateString, functionName))
+        return (name, intervalTime, storedTime, function)
+
+    def load_and_start_schedules(self):
         scheduleFiles = os.listdir(self.CONST_SCHEDULE_DIR)
-        
-        print (scheduleFiles)
-        
+                
         for fileName in scheduleFiles:
             filePath = os.path.join(self.CONST_SCHEDULE_DIR, fileName)
             schedule = self.parse_schedule_file(filePath)
-            self.schedules[schedule[0]] = self._ScheduleStruct(schedule[1], self.test1) # TODO: using test function for now
+            # TODO: Check if we need to reduce interval temporarily 
+            # with respect to the stored time. The pi might have been shutdown 
+            # mid interval so we don't want to wait the full amount of time again. -LM
+            self.schedules[schedule[0]] = self._ScheduleStruct(schedule[1], schedule[3])
         
         for key, value in self.schedules.items():
-            print('Starting %s' % key)
             value.start()
 
+    # NOTE: callbackFunction cannot be async
     def set_schedule(self, scheduleName, timeInterval, callbackFunction):
         fileName = os.path.join(self.CONST_SCHEDULE_DIR, scheduleName)
         if not os.path.exists(fileName):
-            print("File/Dir does not exist")
+            # Path does not exist
             os.makedirs(os.path.dirname(fileName), exist_ok=True)
             with open(fileName, "w") as f:
                 f.write('') # just create the file, dont write anything yet
         with open(fileName, "r+") as f:
-            f.write("%s\n%s\n%d" % (scheduleName, datetime.now(), timeInterval))
+            f.write("%s\n%s\n%d\n%s" % (scheduleName, datetime.now(), timeInterval, callbackFunction))
 
-    def test1(self):
+    def dummyMethod(self):
         print("test1")
-
-    def test2(self):
-        print("test2")
-
-    def test3(self):
-        print("test3")
         
 
 
 
 #test = ReeScheduler()
-#test.set_schedule("test", 4, None) # TODO: Can we store what function to call?
-#test.set_schedule("test2", 2, None)
-#test.load_saved_schedules()
+#test.set_schedule("test", 4, 'self.dummyMethod') # TODO: Can we store what function to call?
+#test.set_schedule("test2", 2, 'self.dummyMethod')
+#test.load_and_start_schedules()

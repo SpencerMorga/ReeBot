@@ -5,6 +5,7 @@ import discord
 import re
 import asyncio
 import config
+import reeScheduler
 
 def is_me(m):
         return m.author == client.user
@@ -59,6 +60,19 @@ class MyClient(discord.Client):
                         await client.delete_message(x)
                         await asyncio.sleep(1.2)
 
+    # TODO: might have to add the sync keyword but it does not yet work with the sceduler so commenting out for now
+    def collectPancakes(self):
+        client.send_message(config.channel_bot_commands, 'p!daily')
+
 token = sys.argv[1]
 client = MyClient()
+
+#globalSymbols = globals().copy()
+#globalSymbols.update(locals())
+#schedule = reeScheduler.ReeScheduler(globalSymbols)
+#schedule.set_schedule("collectPancakes", config.seconds_in_day + 1, "client.collectPancakes")
+
 client.run(token)
+
+
+

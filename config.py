@@ -11,3 +11,6 @@ user_spitfire = '178682430566170624'
 # Debug
 debug_active = False
 debug_user = '' # Will get overwritten with whoever turned on debugging
+
+# Misc
+seconds_in_day = 86400
