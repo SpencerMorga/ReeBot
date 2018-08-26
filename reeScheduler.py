@@ -7,9 +7,11 @@ from datetime import datetime
 class ReeScheduler:
     
     class _ScheduleStruct:
-        def __init__(self, interval, function, *argc, **argv):
+        def __init__(self, interval, firstInterval, function, *argc, **argv):
             self.interval = interval
+            self.firstInterval = firstInterval
             self.running = False
+            self.firstRun = True
             self.function = function
             self.argc = argc
             self.argv = argv
@@ -20,7 +22,11 @@ class ReeScheduler:
             self.function(*self.argc, **self.argv)
         def start(self):
             if not self.running:
-                self.timer = threading.Timer(self.interval, self._run)
+                if self.firstRun:
+                    self.timer = threading.Timer(self.firstInterval, self._run)
+                    self.firstRun = False
+                else:
+                    self.timer = threading.Timer(self.interval, self._run)
                 self.running = True
                 self.timer.start()
         def stop(self):
@@ -61,24 +67,33 @@ class ReeScheduler:
         for fileName in scheduleFiles:
             filePath = os.path.join(self.CONST_SCHEDULE_DIR, fileName)
             schedule = self.parse_schedule_file(filePath)
-            # TODO: Check if we need to reduce interval temporarily 
-            # with respect to the stored time. The pi might have been shutdown 
-            # mid interval so we don't want to wait the full amount of time again. -LM
-            self.schedules[schedule[0]] = self._ScheduleStruct(schedule[1], schedule[3])
+            
+            savedTime = schedule[2]
+            timeDifference = datetime.now() - savedTime
+            differenceInSeconds = timeDifference.total_seconds()
+            firstInterval = schedule[1] - differenceInSeconds
+            if firstInterval <= 0:
+                firstInterval = 0
+                self.set_schedule(schedule[0], schedule[1], schedule[3], True)
+            
+            self.schedules[schedule[0]] = self._ScheduleStruct(schedule[1], firstInterval, schedule[3])
         
         for key, value in self.schedules.items():
             value.start()
 
     # NOTE: callbackFunction cannot be async
-    def set_schedule(self, scheduleName, timeInterval, callbackFunction):
+    def set_schedule(self, scheduleName, timeInterval, callbackFunction, overwrite=True):
         fileName = os.path.join(self.CONST_SCHEDULE_DIR, scheduleName)
+        fileCreated = False
         if not os.path.exists(fileName):
             # Path does not exist
             os.makedirs(os.path.dirname(fileName), exist_ok=True)
             with open(fileName, "w") as f:
-                f.write('') # just create the file, dont write anything yet
-        with open(fileName, "r+") as f:
-            f.write("%s\n%s\n%d\n%s" % (scheduleName, datetime.now(), timeInterval, callbackFunction))
+                f.write("%s\n%s\n%d\n%s" % (scheduleName, datetime.now(), timeInterval, callbackFunction))
+            fileCreated = True
+        if not fileCreated and overwrite:
+            with open(fileName, "r+") as f:
+                f.write("%s\n%s\n%d\n%s" % (scheduleName, datetime.now(), timeInterval, callbackFunction))
 
     def dummyMethod(self):
         print("test1")
@@ -87,6 +102,5 @@ class ReeScheduler:
 
 
 #test = ReeScheduler()
-#test.set_schedule("test", 4, 'self.dummyMethod') # TODO: Can we store what function to call?
-#test.set_schedule("test2", 2, 'self.dummyMethod')
+#test.set_schedule("test", 4, 'self.dummyMethod', False)
 #test.load_and_start_schedules()
