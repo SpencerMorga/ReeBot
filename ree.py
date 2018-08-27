@@ -29,6 +29,9 @@ class MyClient(discord.Client):
             if message.mentions[0].id == config.user_spitfire:
                 if random.randint(0, 100) < 7:
                     await client.send_message(message.channel, 'mama 🖐👁👄👁🖐')
+            if message.mentions[0].id == config.user_krissi:
+                if random.randint(0, 100000) < 10:
+                    await client.send_message(message.channel, 'fuck u')
 
         if 'why are you sad' in message.content:
             await client.send_message(message.channel, 'because my parents never loved me')
