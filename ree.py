@@ -49,7 +49,9 @@ class MyClient(discord.Client):
         if 'why are you sad' in message.content:
             print('ree is sad')
             await client.send_message(message.channel, 'because my parents never loved me')
-
+        
+        if 'reddit.com/r/' in message.content
+            await client.send_message(message.channel, 'Thats my fave subreedit 😎')
         
         #ree commands
         if message.content.startswith('~'):
